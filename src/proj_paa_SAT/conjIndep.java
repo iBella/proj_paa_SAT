@@ -80,10 +80,11 @@ public class conjIndep {
 	}
 	
 	public void branch_and_bound(ArrayList<Integer> v, int i){
+		System.err.println(i);
 		if(eCompleto(i)){
 			if(qtVerticesUsados(v) > qtVerticeSolucao){
-				for(int s : v)
-					solucao.add(s);
+				for(int k = 0; k < v.size(); k++)
+					solucao.set(k, v.get(k));
 				qtVerticeSolucao = qtVerticesUsados(v);
 			}
 		}
@@ -143,9 +144,9 @@ public class conjIndep {
 			i++;
 		}
 			
-		if((consitentes + qtVerticesUsados(v)) >= qtVerticeSolucao){
+		if((consitentes + qtVerticesUsados(v)) >= qtVerticeSolucao)
 			return true;
-		}
+		
 		return false;
 	}
 	
@@ -162,16 +163,5 @@ public class conjIndep {
 		return solFinal;
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }
