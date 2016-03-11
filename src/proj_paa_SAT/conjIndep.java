@@ -81,8 +81,8 @@ public class conjIndep {
 	public void branch_and_bound(ArrayList<Integer> v, int i){
 		if(eCompleto(i)){
 			if(qtVerticesUsados(v) > qtVerticeSolucao){
-				for(int s : v)
-					solucao.add(s);
+				for(int k = 0; k < v.size(); k++)
+					solucao.set(k, v.get(k));
 				qtVerticeSolucao = qtVerticesUsados(v);
 			}
 		}
