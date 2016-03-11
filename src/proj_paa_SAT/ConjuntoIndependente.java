@@ -13,6 +13,12 @@ public class ConjuntoIndependente {
 	private ArrayList<ArrayList<Integer>> grafo = new ArrayList<>();
 	private ArrayList<Integer> vGraus = new ArrayList<>();
 	private ArrayList<Integer> vPertinencia = new ArrayList<>();
+	private ArrayList<Integer> sGulosa;
+	
+	private ArrayList<String> sInicial = new ArrayList<>();
+	private ArrayList<String> vMelhor = new ArrayList<>();
+	private ArrayList<String> vPertBB = new ArrayList<>();
+	private int tamMelhor;
 	
 	public static void main(String[] args) {
 		ConjuntoIndependente c = new ConjuntoIndependente();
@@ -22,6 +28,16 @@ public class ConjuntoIndependente {
 	
 	public ConjuntoIndependente() {
 		lerEntrada();
+		
+		sGulosa = guloso();
+		
+		calculaGrau();
+		tamMelhor = 0;
+		iniciaSolucaoInicial();
+		
+		branch_and_bound(sInicial, 0);
+		
+		System.err.println(solucao());
 	}
 	
 	public void lerEntrada(){
@@ -53,29 +69,14 @@ public class ConjuntoIndependente {
 		catch (IOException e) { e.printStackTrace();}
 
 	}
-
 	
-	public void calculaGrau(){
-		for(ArrayList<Integer> vertice : grafo){
-			int soma = 0;
-			for(int grau : vertice){
-				soma += grau;
-			}
-			System.err.print(soma+" ");
-			vGraus.add(soma);
-		}
-		System.err.println();
-	}
-	
-	
+	//Algoritmo GULOSO
 	public ArrayList<Integer> guloso(){
 		
 		ArrayList<Integer> solucao = new ArrayList<>();
 		
 		calculaGrau();
-		
-		for(int i = 0; i < nVertice; i++)
-			vPertinencia.add(0);
+		iniciaPert();
 		
 		while(verificaFim()){
 			
@@ -101,7 +102,18 @@ public class ConjuntoIndependente {
 		return solucao;
 		
 	}
-	
+	//métodos usados no algoritmo guloso
+	public void calculaGrau(){
+		for(ArrayList<Integer> vertice : grafo){
+			int soma = 0;
+			for(int grau : vertice){
+				soma += grau;
+			}
+			System.err.print(soma+" ");
+			vGraus.add(soma);
+		}
+		System.err.println();
+	}
 	public int menorGrau(){
 		
 		int vertice = vGraus.indexOf(Collections.min(vGraus));
@@ -112,13 +124,11 @@ public class ConjuntoIndependente {
 		}
 		return menorGrau();		
 	}
-	
 	public boolean verificaPert(int vMenorGrau){
 		if(vPertinencia.get(vMenorGrau) == 1)
 			return false;
 		return true;
-	}
-	
+	}	
 	public boolean verificaFim(){
 		int soma = 0;
 		for(int v : vPertinencia){
@@ -128,19 +138,80 @@ public class ConjuntoIndependente {
 			return false;
 		return true;
 	}
+	public void iniciaPert(){
+		for(int i = 0; i < nVertice; i++)
+			vPertinencia.add(0);
+	}
+
+	//métodos usados no algoritmo branch_and_bound
+	public void iniciaSolucaoInicial(){
+		for(int i = 0; i < nVertice; i++){
+			vPertBB.add("nUsado");
+			sInicial.add("viavel");
+		}
+	}
 	
+	public void branch_and_bound(ArrayList<String> s, int i){
+		if(eCompleto(i)){
+			vMelhor = s;
+			tamMelhor = qtUsado(s);
+		}
+		else{
+			s.add(i,"nUsado");
+			if(eConsistente(s,i) && ePromissor(s,i))
+				branch_and_bound(s, i+1);
+			s.add(i, "usado");
+			if(eConsistente(s,i) && ePromissor(s,i))
+				branch_and_bound(s, i+1);
+			s.add(i, "viavel");
+		}
+	}
 	
+	public boolean eCompleto(int i) {
+	    if(i < vMelhor.size())
+	        return false;
+	    return true;
+	}
 	
+	public int qtUsado(ArrayList<String> s) {
+	    int count = 0;
+	    for(int i = 0; i< s.size(); i++)
+	        if(s.get(i).equals("usado"))
+	            count++;
+	    return count;
+	}
 	
+	public boolean eConsistente(ArrayList<String> s, int i) {
+	    if(s.get(i) == "usado")
+	        for(int j = 0; j < i; j++)
+	            if(s.get(j) == "usado" && grafo.get(j).get(i) == 0) {
+	                return false;
+	            }
+	    return true;
+	}
 	
+	public boolean ePromissor(ArrayList<String> s, int i) {
+	    int count = 0;
+	    for(int j = 0; j <= i; j++)
+	        if(s.get(j) == "usado") {
+	            count++;
+	            if(vGraus.get(j) < tamMelhor) {
+	                return false;
+	            }
+	        }
+	    
+	    if((count + (s.size() - i)) <= tamMelhor)
+	        return false;
+	    return true;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
+	public ArrayList<Integer> solucao() {
+		ArrayList<Integer> s = new ArrayList<>();
+	    for(int i = 0; i< vMelhor.size(); i++)
+	        if(vMelhor.get(i) == "usado")
+	            s.add(i+1);
+	    return s;
+	}
 	
 	
 	public void printVerificar(){
