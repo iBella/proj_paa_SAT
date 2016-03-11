@@ -50,7 +50,6 @@ public class conjIndep {
 		catch (IOException e) { e.printStackTrace();}
 
 	}
-	
 	public void calculaGrau(){
 		for(ArrayList<Integer> vertice : grafo){
 			int soma = 0;
