@@ -19,14 +19,23 @@ public class ConjuntoIndependente {
 	private ArrayList<Integer> solucao = new ArrayList<>();
 	private ArrayList<Integer> inicial = new ArrayList<>();
 	
-	public static void main(String[] args) {
-		new ConjuntoIndependente();
+	public ConjuntoIndependente(){}
+	
+	//Construtor para Reduções
+	public ConjuntoIndependente(ArrayList<ArrayList<Integer>> g, int nVer){
+		this.grafo = g;
+		this.nVertice = nVer;
 	}
 	
-	public void lerEntrada(){
+	//Construtor para teste
+	public ConjuntoIndependente(String s) {
+		lerEntrada(s);
+	}
+	
+	public void lerEntrada(String s){
 		
 		try {
-			BufferedReader arq = new BufferedReader(new FileReader("conj_indep.txt"));
+			BufferedReader arq = new BufferedReader(new FileReader(s));
 			int nLinha = 0;
 			
 			while(arq.ready()){
@@ -67,15 +76,12 @@ public class ConjuntoIndependente {
 		}
 	}
 	
-	public ConjuntoIndependente() {
-		lerEntrada();
+	public void algoritmoConjuntoIndep(){
 		calculaGrau();
 		qtVerticeSolucao = 0;
 		solucaoIncial();
 		
 		branch_and_bound(inicial, 0);
-		
-		System.err.println(criarSolucao());
 	}
 	
 	public void branch_and_bound(ArrayList<Integer> v, int i){
@@ -88,7 +94,6 @@ public class ConjuntoIndependente {
 			}
 		}
 		else{
-			//v.set(i, -1);
 			if(eConsistente(v, i) && ePromissor(v, i)){
 				branch_and_bound(v, i+1);
 			}
@@ -106,7 +111,6 @@ public class ConjuntoIndependente {
 			return false;
 		return true;
 	}
-	
 	public int qtVerticesUsados(ArrayList<Integer> v){
 		int cont = 0;
 		for(int i = 0; i < v.size(); i++){
@@ -116,7 +120,6 @@ public class ConjuntoIndependente {
 		}
 		return cont;
 	}
-	
 	public boolean eConsistente(ArrayList<Integer> v, int i){
 		if(v.get(i) == 1){
 			int j = 0;
@@ -129,7 +132,6 @@ public class ConjuntoIndependente {
 		}
 		return true;
 	}
-	
 	public boolean ePromissor(ArrayList<Integer> v, int j){
 		int i = 0;
 		int consitentes = 0;
@@ -148,7 +150,6 @@ public class ConjuntoIndependente {
 		
 		return false;
 	}
-	
 	public ArrayList<Integer> criarSolucao(){
 		ArrayList<Integer> solFinal = new ArrayList<>();
 		int i = 0;
@@ -160,4 +161,28 @@ public class ConjuntoIndependente {
 		return solFinal;
 	}
 
+	public void teste() {
+		
+		System.err.println("CONJUNTO INDEPENDENTE");
+		
+		ConjuntoIndependente c01 = new ConjuntoIndependente("conj_indep01.txt");
+		ConjuntoIndependente c02 = new ConjuntoIndependente("conj_indep02.txt");
+		ConjuntoIndependente c03 = new ConjuntoIndependente("conj_indep03.txt");
+		
+		long tempo1 = System.nanoTime();
+		c01.algoritmoConjuntoIndep();
+		tempo1 = System.nanoTime() - tempo1; 
+		System.err.println("Teste 1:\nSolução: "+c01.criarSolucao()+"\nTempo: "+tempo1);
+		
+		long tempo2 = System.nanoTime();
+		c02.algoritmoConjuntoIndep();
+		tempo2 = System.nanoTime() - tempo2; 
+		System.err.println("Teste 2:\nSolução: "+c02.criarSolucao()+"\nTempo: "+tempo2);
+		
+		long tempo3 = System.nanoTime();
+		c03.algoritmoConjuntoIndep();
+		tempo3 = System.nanoTime() - tempo3; 
+		System.err.println("Teste 3:\nSolução: "+c03.criarSolucao()+"\nTempo: "+tempo3);
+		
+	}
 }
