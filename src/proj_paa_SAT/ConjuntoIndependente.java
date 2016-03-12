@@ -12,14 +12,15 @@ import java.util.ArrayList;
 
 public class ConjuntoIndependente {
 
-	private int nVertice;
-	private ArrayList<ArrayList<Integer>> grafo = new ArrayList<>();
-	private ArrayList<Integer> vGraus = new ArrayList<>();
-	private int qtVerticeSolucao;
-	private ArrayList<Integer> solucao = new ArrayList<>();
-	private ArrayList<Integer> inicial = new ArrayList<>();
+	private int nVertice;												//numero de vértice
+	private ArrayList<ArrayList<Integer>> grafo = new ArrayList<>();	//grafo
+	private ArrayList<Integer> vGraus = new ArrayList<>();				//graus referente aos vértices
+	private int qtVerticeSolucao = 0;									//quantidade de vértices na solução
+	private ArrayList<Integer> solucao = new ArrayList<>();				//solução final
+	private ArrayList<Integer> inicial = new ArrayList<>();				//solução inicial
 	
-	public ConjuntoIndependente(){}
+	public ConjuntoIndependente(){
+	}
 	
 	//Construtor para Reduções
 	public ConjuntoIndependente(ArrayList<ArrayList<Integer>> g, int nVer){
@@ -75,11 +76,11 @@ public class ConjuntoIndependente {
 			inicial.add(0);
 		}
 	}
-	
+
 	public void algoritmoConjuntoIndep(){
 		calculaGrau();
-		qtVerticeSolucao = 0;
 		solucaoIncial();
+		qtVerticeSolucao = 0;
 		
 		branch_and_bound(inicial, 0);
 	}
